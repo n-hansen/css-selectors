@@ -30,11 +30,9 @@ parseCss ::
   String ->
   -- | The selectorgroup that is the equivalent of the given 'String'.
   SelectorGroup
-parseCss st = al (alexScanTokens st')
+parseCss st = either error id $ cssselector =<< alexScanTokens st'
   where
     st' = filter ('\r' /=) st
-    al (Left er) = error er
-    al (Right val) = cssselector val
 
 -- | Parse the string to a 'Either String SelectorGroup'.
 parseCssEither ::
@@ -42,7 +40,7 @@ parseCssEither ::
   String ->
   -- | The selectorgroup that is the equivalent of the given 'String', or an error message.
   Either String SelectorGroup
-parseCssEither st = cssselector <$> alexScanTokens st
+parseCssEither st = cssselector =<< alexScanTokens st
 
 liftDataWithText :: Data a => a -> Q Exp
 liftDataWithText = dataToExpQ ((((AppE (VarE 'pack) <$>) . lift . unpack) <$>) . cast)

@@ -24,6 +24,7 @@ import Data.Text(pack)
 %name cssselector
 %tokentype { TokenLoc }
 %error { happyError }
+%monad { Either String }
 
 %token
     ','     { TokenLoc Comma _ _ }
@@ -188,7 +189,7 @@ Ident
     ;
 
 {
-happyError :: [TokenLoc] -> a
-happyError (~(TokenLoc t s ~(Just (AlexPn _ l c))):_) = error ("Can not parse the CSS selector: unpexected token \"" <> s <> "\" at location (" <> show l <> ", " <> show c <> ")")
-happyError _ = error "Unexpected end of string when parsing a css selector."
+happyError :: [TokenLoc] -> Either String a
+happyError (~(TokenLoc t s ~(Just (AlexPn _ l c))):_) = Left ("Can not parse the CSS selector: unpexected token \"" <> s <> "\" at location (" <> show l <> ", " <> show c <> ")")
+happyError _ = Left "Unexpected end of string when parsing a css selector."
 }
