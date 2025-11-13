@@ -12,6 +12,7 @@ module Css3.Selector.QuasiQuoters
   ( csssel,
     cssselFile,
     parseCss,
+    parseCssEither,
   )
 where
 
@@ -34,6 +35,14 @@ parseCss st = al (alexScanTokens st')
     st' = filter ('\r' /=) st
     al (Left er) = error er
     al (Right val) = cssselector val
+
+-- | Parse the string to a 'Either String SelectorGroup'.
+parseCssEither ::
+  -- | The string to be parsed to a 'SelectorGroup'
+  String ->
+  -- | The selectorgroup that is the equivalent of the given 'String', or an error message.
+  Either String SelectorGroup
+parseCssEither st = cssselector <$> alexScanTokens st
 
 liftDataWithText :: Data a => a -> Q Exp
 liftDataWithText = dataToExpQ ((((AppE (VarE 'pack) <$>) . lift . unpack) <$>) . cast)
